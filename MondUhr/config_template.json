@@ -1,0 +1,8 @@
+{
+  "SSID": "",
+  "WLAN_PW": "",
+  "API_KEY": "",
+  "LATITUDE": 0.0,
+  "LONGITUDE": 0.0,
+  "NTPServer": "pool.ntp.org"
+}
