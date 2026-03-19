@@ -2,7 +2,9 @@
   "SSID": "",
   "WLAN_PW": "",
   "API_KEY": "",
-  "LATITUDE": 0.0,
-  "LONGITUDE": 0.0,
-  "NTPServer": "pool.ntp.org"
+  "LATITUDE": 59.155196,
+  "LONGITUDE": 12.754457,
+  "NTPServer": "pool.ntp.org",
+  "test_mode": false,
+  "show_time": false
 }
