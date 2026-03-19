@@ -233,6 +233,8 @@ if get_ntp_time():
     last_ntp_sync = utime.time()
 
 
+running_easter_egg = False   # verhindert doppelten Regenbogen während eines Durchlaufs
+
 while True:
     now = utime.time()
 
