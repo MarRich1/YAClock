@@ -187,6 +187,39 @@ def mix_color(current, overlay, moon):
     return (r, g, b)
 
 
+# --- Easter-Egg / Rainbow ----------------------------------------------------
+
+def wheel(pos):
+    # 0–255 → Farbe im Farbkreis (rot→grün→blau→rot)
+    if pos < 0 or pos > 255:
+        return (0, 0, 0)
+    if pos < 85:
+        return (255 - pos*3, pos*3, 0)
+    if pos < 170:
+        pos -= 85
+        return (0, 255 - pos*3, pos*3)
+    pos -= 170
+    return (pos*3, 0, 255 - pos*3)
+
+
+def rainbow_cycle(repeat=1, delay_ms=10):
+    # 3x Regenbogen über den Ring
+    for _ in range(repeat):
+        for j in range(256):  # 0–255 einmal durchlaufen
+            for i in range(NUM_LEDS):
+                rc_index = (i * 256 // NUM_LEDS + j) % 255
+                np[i] = wheel(rc_index)
+            np.write()
+            utime.sleep_ms(delay_ms)
+
+
+def check_easter_egg(h, m):
+    # 11:11 → 1 1 1 1 → alle gleich
+    t = f"{h:d}{m:d}"
+    digits = [c for c in t]
+    return all(d == digits[0] for d in digits)
+
+
 # START
 print('=== Mondlampe LED0=6Uhr (Europa Phasen) ===')
 status_led(1, (0, 255, 255) if test_mode else (0, 255, 0))
