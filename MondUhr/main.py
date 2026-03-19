@@ -1,6 +1,7 @@
 # Vollständiger MicroPython-Code Mondlampe + Uhrzeit (LED0=6Uhr, Europa-Mondphasen)
 # NTP:192.168.178.1 | CET/CEST | 93 LEDs | test_mode & show_time via config.json
 # Mond: weiß, max 50% Helligkeit; LEDs von 3Uhr (LED69) symmetrisch nach oben/unten
+# Easter-Egg: bei 11:11, 22:22, 4:44 usw. läuft ein Regenbogen 3x um den Ring
 
 import network
 import time
