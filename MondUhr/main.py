@@ -251,6 +251,14 @@ while True:
     h, m, s = local_t[3], local_t[4], local_t[5]
     print(f'{h:02d}:{m:02d}:{s:02d} {"CEST" if dst else "CET"}')
 
+    # Easter-Egg: Regenbogen wenn 11:11, 22:22, 00:00, 4:44 usw.
+    if not running_easter_egg and s == 0 and m < 60 and h < 24:
+        if check_easter_egg(h, m):
+            print(f"Easter-Egg: {h:02d}:{m:02d} → Regenbogen 3x")
+            running_easter_egg = True
+            rainbow_cycle(repeat=3, delay_ms=10)
+            running_easter_egg = False
+
     if s % 10 == 0:
         set_moon_lamp(illum, elev)
         moon_color = np[0]  # Center 6Uhr (falls nötig)
