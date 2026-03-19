@@ -149,7 +149,7 @@ def set_moon_lamp(illum_pct, brightness):
     np.fill((0, 0, 5))  # minimaler Hintergrund
 
     max_leds = NUM_LEDS // 2        # ca. 180° Gesamtbogen
-    leds_on = int(illum_pct * max_leds * 2.0)  # 0–100% → 0–max_leds*2
+    leds_on = int(illum_pct * max_leds * 2.0)  # 0–100% -> 0–max_leds*2
     color = moon_color(illum_pct, brightness)
 
     center = 69  # 3Uhr als Startpunkt
@@ -204,18 +204,26 @@ def wheel(pos):
 
 
 def rainbow_cycle(repeat=1, delay_ms=10):
-    # 3x Regenbogen über den Ring
-    for _ in range(repeat):
-        for j in range(256):  # 0–255 einmal durchlaufen
-            for i in range(NUM_LEDS):
-                rc_index = (i * 256 // NUM_LEDS + j) % 255
-                np[i] = wheel(rc_index)
+    # x-Mal Regenbogen über den Ring
+    for r in range(repeat):
+        print(f"Regenbogen-Durchlauf {r+1}/{repeat}")
+        for i in range(NUM_LEDS):
+            print(f"    LED {i+1}/{NUM_LEDS}")
+            rc_index = (i * 256 // NUM_LEDS) % 255
+            np[i] = wheel(rc_index)
+            np.write()
+            utime.sleep_ms(delay_ms)
+
+        for i in range(NUM_LEDS):
+            print(f"    LED {i+1}/{NUM_LEDS} aus")
+            rc_index = (i * 256 // NUM_LEDS) % 255
+            np[i] = (0, 0, 0)  # nach Regenbogen kurz aus
             np.write()
             utime.sleep_ms(delay_ms)
 
 
 def check_easter_egg(h, m):
-    # 11:11 → 1 1 1 1 → alle gleich
+    # 11:11 => 1 1 1 1 => alle gleich
     t = f"{h:d}{m:d}"
     digits = [c for c in t]
     return all(d == digits[0] for d in digits)
@@ -255,7 +263,7 @@ while True:
     # Easter-Egg: Regenbogen wenn 11:11, 22:22, 00:00, 4:44 usw.
     if not running_easter_egg and s == 0 and m < 60 and h < 24:
         if check_easter_egg(h, m):
-            print(f"Easter-Egg: {h:02d}:{m:02d} → Regenbogen 3x")
+            print(f"Easter-Egg: {h:02d}:{m:02d} -> Regenbogen 3x")
             running_easter_egg = True
             rainbow_cycle(repeat=3, delay_ms=10)
             running_easter_egg = False
