@@ -114,10 +114,10 @@ def get_moon_data(test=False):
     if test:
         test_moon_phase = (test_moon_phase + 0.01) % 1.0
         illum = test_moon_phase
-        phase_age = illum * 29.53
-        brightness = 0.1 + 0.9 * (1 - abs(illum * 2 - 1))
-        print(f"TEST [{int(illum*100):02d}%]: {illum:.3f}, {phase_age:.1f}d, {brightness:.3f}")
-        return illum, phase_age, brightness
+        #phase_age = illum * 29.53
+        brightness = 1
+        print(f"TEST [{int(illum*100):02d}%]: {illum:.3f}, {brightness:.3f}")
+        return illum, brightness
 
     # LIVE API
     local_t, _ = get_local_time()
@@ -129,20 +129,21 @@ def get_moon_data(test=False):
     try:
         resp = requests.get(full_url, headers=headers, timeout=10)
         data = ujson.loads(resp.text)
+        print(f"API Antwort: {data}")
         resp.close()
         phase = data.get('phase', {})
-        illum = phase.get('illumination', 50) / 100.0
-        brightness = 0.1 + 0.9 * illum
+        illum = phase.get('illumination', 1)
+        brightness = 1 # 0.1 + 0.9 * illum
         print(f"LIVE: Illum={illum:.2f}, Bright={brightness:.2f}")
-        return illum, phase.get('age_days', 14.8), brightness
+        return illum, brightness
     except Exception as e:
         print('API Fehler:', e)
-        return 0.5, 14.8, 0.5
+        return 0.5, 0.5
 
 
 def set_moon_lamp(illum_pct, brightness):
     def moon_color(illum, elev):
-        # weiß, max etwa 50% Helligkeit
+        # weiss, max etwa 50% Helligkeit
         base = int(255 * 0.5 * elev * illum + 0.5)
         return (base, base, base)
 
@@ -151,6 +152,7 @@ def set_moon_lamp(illum_pct, brightness):
     max_leds = NUM_LEDS // 2        # ca. 180° Gesamtbogen
     leds_on = int(illum_pct * max_leds * 2.0)  # 0–100% -> 0–max_leds*2
     color = moon_color(illum_pct, brightness)
+    print(f"Illum {illum_pct:.2f} -> {leds_on} LEDs, Color {color}")
 
     center = 69  # 3Uhr als Startpunkt
 
@@ -237,7 +239,7 @@ print(f"{'TEST 10s Zyklus' if test_mode else 'LIVE API 4h'} | 3Uhr=LED69, show_t
 
 connect_wifi()
 if get_ntp_time():
-    illum, phase_age, elev = get_moon_data(test=test_mode)
+    illum, elev = get_moon_data(test=test_mode)
     last_moon_update = -999999
     last_ntp_sync = utime.time()
 
@@ -253,7 +255,7 @@ while True:
 
     interval = 5 if test_mode else 4 * 3600
     if now - last_moon_update >= interval:
-        illum, phase_age, elev = get_moon_data(test=test_mode)
+        illum, elev = get_moon_data(test=test_mode)
         last_moon_update = now
 
     local_t, dst = get_local_time()
