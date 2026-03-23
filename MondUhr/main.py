@@ -238,10 +238,12 @@ print(f"{'TEST 10s Zyklus' if test_mode else 'LIVE API 4h'} | 3Uhr=LED69, show_t
 
 
 connect_wifi()
+get_ntp_time()
+
 if get_ntp_time():
-    illum, elev = get_moon_data(test=test_mode)
     last_moon_update = -999999
     last_ntp_sync = utime.time()
+#    illum, elev = get_moon_data(test=test_mode)
 
 
 running_easter_egg = False   # verhindert doppelten Regenbogen während eines Durchlaufs
