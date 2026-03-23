@@ -255,14 +255,13 @@ while True:
         get_ntp_time()
         last_ntp_sync = now
 
-    interval = 5 if test_mode else 4 * 3600
+    interval = 5 if test_mode else 3600
     if now - last_moon_update >= interval:
         illum, elev = get_moon_data(test=test_mode)
         last_moon_update = now
 
     local_t, dst = get_local_time()
     h, m, s = local_t[3], local_t[4], local_t[5]
-    print(f'{h:02d}:{m:02d}:{s:02d} {"CEST" if dst else "CET"}')
 
     # Easter-Egg: Regenbogen wenn 11:11, 22:22, 00:00, 4:44 usw.
     if not running_easter_egg and s == 0 and m < 60 and h < 24:
@@ -273,6 +272,7 @@ while True:
             running_easter_egg = False
 
     if s % 10 == 0:
+        print(f'{h:02d}:{m:02d}:{s:02d} {"CEST" if dst else "CET"}')
         set_moon_lamp(illum, elev)
         moon_color = np[0]  # Center 6Uhr (falls nötig)
 
