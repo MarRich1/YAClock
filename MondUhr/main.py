@@ -122,7 +122,7 @@ def get_moon_data(test=False):
     # LIVE API
     local_t, _ = get_local_time()
     url = "https://api.freeastroapi.com/api/v1/moon/phase"
-    params = f"?date={local_t[0]:04d}-{local_t[1]:02d}-{local_t[2]:02d}&lat={LAT}&lon={LON}&include_visuals=false&include_zodiac=false&include_rise_set=true&include_interpretation=false"
+    params = f"?date={local_t[0]:04d}-{local_t[1]:02d}-{local_t[2]:02d}T{local_t[3]:02d}:{local_t[4]:02d}&lat={LAT}&lon={LON}&include_visuals=false&include_zodiac=false&include_rise_set=true&include_interpretation=false"
     full_url = url + params
     headers = {"x-api-key": API_KEY}
 
