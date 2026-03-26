@@ -238,7 +238,6 @@ print(f"{'TEST 10s Zyklus' if test_mode else 'LIVE API 4h'} | 3Uhr=LED69, show_t
 
 
 connect_wifi()
-get_ntp_time()
 
 if get_ntp_time():
     last_moon_update = -999999
