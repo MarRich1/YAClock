@@ -141,9 +141,15 @@ def get_moon_data(test=False):
 
 def set_moon_lamp(illum_pct):
     def moon_color():
-        # weiss, max etwa 50% Helligkeit
-        #base = int(255 * 0.5 * elev * illum + 0.5)
+        local_t, _ = get_local_time()
         base = 12
+
+        # Tagsüber etwas heller, nachts gedämpft (Mond nicht zu dominant)
+        if local_t[3] >= 6 and local_t[3] <= 22:
+            base = 20
+        else:
+            base = 4
+
         return (base, base, base)
 
     np.fill((0, 0, 5))  # minimaler Hintergrund
