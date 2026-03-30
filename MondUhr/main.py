@@ -104,8 +104,12 @@ def get_local_time():
 
 
 def weekday(year, month, day):
-    if month < 3: month += 12; year -= 1
-    return (day + (13*(month+1)//5) + year + year//4 + 5*year//100 + 4*year//400) % 7
+    t = [0,3,2,5,0,3,5,1,4,6,2,4]
+    if month < 3:
+        year = year - 1
+    
+    w = (year + year/4 - year/100 + year/400 + t[month-1] + day) % 7
+    return int(w)
 
 
 def get_moon_data(test=False):
