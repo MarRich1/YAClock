@@ -150,16 +150,15 @@ def set_moon_lamp(illum_pct):
 
         # Tagsüber etwas heller, nachts gedämpft (Mond nicht zu dominant)
         if local_t[3] >= 6 and local_t[3] <= 22:
-            base = 20
+            base = 24
         else:
-            base = 4
+            base = 1
 
         return (base, base, base)
 
     np.fill((0, 0, 5))  # minimaler Hintergrund
 
-    max_leds = NUM_LEDS // 2        # ca. 180° Gesamtbogen
-    leds_on = int(illum_pct * max_leds * 2.0)  # 0–100% -> 0–max_leds*2
+    leds_on = round(illum_pct * NUM_LEDS)  # 0–100% -> 0–max_leds*2
     color = moon_color()
     print(f"Illum {illum_pct:.2f} -> {leds_on} LEDs, Color {color}")
 
