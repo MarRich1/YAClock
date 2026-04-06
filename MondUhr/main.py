@@ -113,6 +113,11 @@ def weekday(year, month, day):
 
 
 def get_moon_data(test=False):
+    moondata = {
+        "Illium": 0.4,
+        "IsWaxing": False
+    }
+
     global test_moon_phase
 
     if test:
@@ -120,7 +125,7 @@ def get_moon_data(test=False):
         illum = test_moon_phase
         #phase_age = illum * 29.53
         print(f"TEST [{int(illum*100):02d}%]: {illum:.3f}")
-        return illum
+        return (illum, True)
 
     # LIVE API
     local_t, _ = get_local_time()
@@ -135,15 +140,16 @@ def get_moon_data(test=False):
         print(f"API Antwort: {data}")
         resp.close()
         phase = data.get('phase', {})
-        illum = phase.get('illumination', 1)
-        print(f"LIVE: Illum={illum:.2f}")
-        return illum
+        moondata['Illium'] = phase.get('illumination', 1)
+        moondata['IsWaxing'] = phase.get('is_waxing', True)
+        print(f"LIVE: Illum={moondata['Illium']:.2f}, Waxing={moondata['IsWaxing']}")
+        return moondata
     except Exception as e:
         print('API Fehler:', e)
-        return 0.5
+        return moondata
 
 
-def set_moon_lamp(illum_pct):
+def set_moon_lamp(moondata):
     def moon_color():
         local_t, _ = get_local_time()
         base = 12
@@ -158,11 +164,16 @@ def set_moon_lamp(illum_pct):
 
     np.fill((0, 0, 5))  # minimaler Hintergrund
 
-    leds_on = round(illum_pct * NUM_LEDS)  # 0–100% -> 0–max_leds*2
+    leds_on = round(moondata['Illium'] * NUM_LEDS)  # 0–100% -> 0–max_leds*2
     color = moon_color()
-    print(f"Illum {illum_pct:.2f} -> {leds_on} LEDs, Color {color}")
+    print(f"Illum {moondata['Illium']} -> {leds_on} LEDs, Color {color}")
 
-    center = 69  # 3Uhr als Startpunkt
+    if(moondata['IsWaxing']):
+        print("Zunehmender Mond: Start 3Uhr (LED69)")
+        center = 69  # 3Uhr als Startpunkt
+    else:
+        print("Abnehmender Mond: Start 9Uhr (LED23)")
+        center = 23  # 9Uhr als Startpunkt für abnehmenden Mond
 
     for i in range(leds_on):
         # symmetrisch um 0° (3Uhr) nach oben und unten
@@ -244,7 +255,6 @@ print('=== Mondlampe LED0=6Uhr (Europa Phasen) ===')
 status_led(1, (0, 255, 255) if test_mode else (0, 255, 0))
 print(f"{'TEST 10s Zyklus' if test_mode else 'LIVE API 4h'} | 3Uhr=LED69, show_time={show_time}")
 
-
 connect_wifi()
 
 if get_ntp_time():
@@ -252,9 +262,13 @@ if get_ntp_time():
     last_ntp_sync = utime.time()
 #    illum, elev = get_moon_data(test=test_mode)
 
-
 running_easter_egg = False   # verhindert doppelten Regenbogen während eines Durchlaufs
 
+moondata = {
+    "Illium": 0.4,
+    "IsWaxing": False
+}
+ 
 while True:
     now = utime.time()
 
@@ -264,7 +278,7 @@ while True:
 
     interval = 5 if test_mode else 3600
     if now - last_moon_update >= interval:
-        illum = get_moon_data(test=test_mode)
+        moondata = get_moon_data(test=test_mode)
         last_moon_update = now
 
     local_t, dst = get_local_time()
@@ -280,7 +294,7 @@ while True:
 
     if s % 10 == 0:
         print(f'{h:02d}:{m:02d}:{s:02d} {"CEST" if dst else "CET"}')
-        set_moon_lamp(illum)
+        set_moon_lamp(moondata)
         moon_color = np[0]  # Center 6Uhr (falls nötig)
 
         if show_time:
